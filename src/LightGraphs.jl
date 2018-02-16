@@ -120,7 +120,7 @@ smallgraph,
 euclidean_graph,
 
 #minimum_spanning_trees
-kruskal_mst, prim_mst,
+kruskal_mst, prim_mst, kruskal_mst_old,
 
 #biconnectivity and articulation points
 articulation, biconnected_components,
