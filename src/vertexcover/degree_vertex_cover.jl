@@ -22,7 +22,7 @@ function degree_vertex_cover(
 
 	deleted[v] = true
 	push!(cover, v)
-        for u in neighbors(g, v)
+        @inbounds @simd for u in neighbors(g, v)
             deleted[u] || (degree_queue[u] -= 1)
         end
     end

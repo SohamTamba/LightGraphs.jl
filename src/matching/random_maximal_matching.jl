@@ -16,7 +16,7 @@ function random_maximal_matching_it(
     seen = zeros(Bool, nvg)
     edge_list = Random.shuffle(collect(edges(g)))
 
-    for e in edge_list
+    @inbounds for e in edge_list
         if !(seen[e.src] || seen[e.dst])
             seen[e.src] = seen[e.dst] = true
             push!(matching, e)
@@ -42,7 +42,7 @@ function seq_random_maximal_matching(
     ) where T <: Integer 
 
     matching = random_maximal_matching_it(g)
-    for i in 2:reps
+    @inbounds @simd for i in 2:reps
         matching = best_matching(random_maximal_matching_it(g), matching)
     end
 

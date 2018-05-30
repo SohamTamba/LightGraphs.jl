@@ -22,7 +22,7 @@ function random_minimal_dominating_set_it(
     	(dom_degree[v] == 0) && continue
     	safe = true
     	for u in neighbors(g, v)
-        	if !is_dom[u] && dom_degree[u] <= 1
+        	@inbounds if !is_dom[u] && dom_degree[u] <= 1
         		safe = false
         		break
         	end
@@ -30,7 +30,7 @@ function random_minimal_dominating_set_it(
         safe || continue
         is_dom[v] = false
         dom_size -= 1
-        for u in neighbors(g, v)
+        @inbounds @simd for u in neighbors(g, v)
         	dom_degree[u] -= 1
         end
     end
@@ -63,7 +63,7 @@ function seq_random_minimal_dominating_set(
     ) where T <: Integer 
 
     dom_set = random_minimal_dominating_set_it(g)
-    for i in 2:reps
+    @inbounds @simd for i in 2:reps
         dom_set = best_dom_set(random_minimal_dominating_set_it(g), dom_set)
     end
     return dom_set

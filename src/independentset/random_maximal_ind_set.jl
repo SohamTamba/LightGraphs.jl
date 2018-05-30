@@ -21,7 +21,7 @@ function random_maximal_independent_set_it(
         deleted[v] && continue
         deleted[v] = true
         push!(ind_set, v)
-        for u in neighbors(g, v)
+        @inbounds @simd for u in neighbors(g, v)
             deleted[u] = true
         end
     end
@@ -48,7 +48,7 @@ function seq_random_maximal_independent_set(
     ) where T <: Integer 
 
     ind_set = random_maximal_independent_set_it(g)
-    for i in 2:reps
+    @inbounds @simd for i in 2:reps
         ind_set = best_ind_set(random_maximal_independent_set_it(g), ind_set)
     end
     return ind_set

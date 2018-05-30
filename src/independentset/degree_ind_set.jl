@@ -25,7 +25,7 @@ function degree_independent_set(
         for u in neighbors(g, v)
         	deleted[u] && continue
         	deleted[u] = true
-        	for w in neighbors(g, u)
+        	@inbounds @simd for w in neighbors(g, u)
         		deleted[w] || (degree_queue[w] -= 1)
         	end
         end

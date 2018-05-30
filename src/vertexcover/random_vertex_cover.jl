@@ -18,7 +18,7 @@ function random_vertex_cover_it(
     seen = zeros(Bool, nvg)
     edge_list = Random.shuffle(collect(edges(g)))
 
-    for e in edge_list
+    @inbounds for e in edge_list
         if !(seen[e.src] || seen[e.dst])
             seen[e.src] = seen[e.dst] = true
             push!(cover, e.src)
@@ -48,7 +48,7 @@ function seq_random_vertex_cover(
     ) where T <: Integer 
 
     cover = random_vertex_cover_it(g)
-    for i in 2:reps
+    @inbounds @simd for i in 2:reps
         cover = best_cover(random_vertex_cover_it(g), cover)
     end
     return cover

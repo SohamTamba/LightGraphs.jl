@@ -12,10 +12,10 @@ function update_dominated(
     deleted::Vector{Bool}
     ) where T <: Integer
 
-    if !dominated[v]
+    @inbounds if !dominated[v]
         dominated[v] = true
         deleted[v] || (degree_queue[v] -= 1)
-        for u in neighbors(g, v)
+        @inbounds @simd for u in neighbors(g, v)
             deleted[u] || (degree_queue[u] -= 1)
         end
     end
