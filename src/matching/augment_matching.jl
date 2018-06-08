@@ -93,7 +93,7 @@ function augment_matching(g::AbstractGraph{T},
 	
 	parents = zeros(T, nvg)
 	for num_it in 1:reps_augment
-		(size(unpartnered)[1]< 2) && break
+		(length(unpartnered) < 2) && break
 		t = s = zero(T)
 		for v in unpartnered
 			t = bfs_augment!(g, v, partner, parents)

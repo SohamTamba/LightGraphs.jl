@@ -3,16 +3,16 @@
     g3 = StarGraph(5)
     for g in testgraphs(g3)
         m = @inferred(augment_matching(g))
-        @test (size(m)[1] == 1 && (m[1].dst == 1 || m[1].src == 1))
+        @test (length(m)== 1 && (m[1].dst == 1 || m[1].src == 1))
     end
     
     g4 = CompleteGraph(7)
     for g in testgraphs(g4)
         m = @inferred(augment_matching(g))
-        @test size(m)[1] == 3 #All except one vertex 
+        @test length(m)== 3 #All except one vertex 
 
         m = @inferred(augment_matching(g, [Edge(2, 4), Edge(1, 7)]))
-        @test size(m)[1] == 3
+        @test length(m)== 3
     end
 
     g5 = PathGraph(4)

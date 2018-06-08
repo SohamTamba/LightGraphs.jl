@@ -15,7 +15,7 @@ function random_vertex_cover_it(
 
     nvg::T = nv(g)  
     cover = Vector{T}()  
-    seen = zeros(Bool, nvg)
+    seen = falses(nvg)
     edge_list = Random.shuffle(collect(edges(g)))
 
     @inbounds for e in edge_list
@@ -29,7 +29,7 @@ function random_vertex_cover_it(
     return cover
 end
 
-best_cover(c1::Vector{T}, c2::Vector{T}) where T <: Integer = size(c1)[1] < size(c2)[1] ? c1 : c2
+best_cover(c1::Vector{T}, c2::Vector{T}) where T <: Integer = length(c1) < length(c2) ? c1 : c2
 
 """
     seq_random_vertex_cover(g, reps)
@@ -70,7 +70,7 @@ function parallel_random_vertex_cover(
     reps::Integer
     ) where T <: Integer 
 
-    type_instable_cover = @distributed (best_cover) for i in 1:max(1, reps)
+    type_instable_cover = Distributed.@distributed (best_cover) for i in 1:max(1, reps)
         random_vertex_cover_it(g)
     end
     cover = Vector{T}() #Makes the code type stable

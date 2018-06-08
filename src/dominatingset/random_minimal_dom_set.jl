@@ -13,7 +13,7 @@ function random_minimal_dominating_set_it(
     ) where T <: Integer 
 
     nvg::T = nv(g)  
-    is_dom = ones(Bool, nvg)  
+    is_dom = trues(nvg)  
     dom_degree = degree(g)
     perm_v = Random.shuffle(collect(vertices(g)))
     dom_size = nvg
@@ -30,9 +30,7 @@ function random_minimal_dominating_set_it(
         safe || continue
         is_dom[v] = false
         dom_size -= 1
-        @inbounds @simd for u in neighbors(g, v)
-        	dom_degree[u] -= 1
-        end
+        dom_degree[neighbors(g, v)] .-= 1
     end
 
     dom_set = Vector{T}()
@@ -44,7 +42,7 @@ function random_minimal_dominating_set_it(
     return dom_set
 end
 
-best_dom_set(ds1::Vector{T}, ds2::Vector{T}) where T <: Integer = size(ds1)[1] < size(ds2)[1] ? ds1 : ds2
+best_dom_set(ds1::Vector{T}, ds2::Vector{T}) where T <: Integer = length(ds1) < length(ds2) ? ds1 : ds2
 
 """
     seq_random_minimal_dominating_set(g, reps)
@@ -85,7 +83,7 @@ function parallel_random_minimal_dominating_set(
     reps::Integer
     ) where T <: Integer 
 
-    type_instable_dom_set = @distributed (best_dom_set) for i in 1:max(1, reps)
+    type_instable_dom_set = Distributed.@distributed (best_dom_set) for i in 1:max(1, reps)
         random_minimal_dominating_set_it(g)
     end
     

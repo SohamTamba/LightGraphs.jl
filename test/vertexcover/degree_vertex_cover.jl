@@ -9,7 +9,7 @@
     g4 = CompleteGraph(5)
     for g in testgraphs(g4)
         c = @inferred(degree_vertex_cover(g))
-        @test size(c)[1] == 4 #All except one vertex 
+        @test length(c)== 4 #All except one vertex 
     end
 
     #PathGraph(5) with additional edge 2-5

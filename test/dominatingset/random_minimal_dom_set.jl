@@ -3,19 +3,19 @@
     g3 = StarGraph(5)
     for g in testgraphs(g3)
         d = @inferred(random_minimal_dominating_set(g, 2))
-        @test (size(d)[1] == 1 || (size(d)[1] == 4 && minimum(d) > 1 ))
+        @test (length(d)== 1 || (length(d)== 4 && minimum(d) > 1 ))
 
         d = @inferred(random_minimal_dominating_set(g, 2, parallel=true))
-        @test (size(d)[1] == 1 || (size(d)[1] == 4 && minimum(d) > 1 ))
+        @test (length(d)== 1 || (length(d)== 4 && minimum(d) > 1 ))
     end
     
     g4 = CompleteGraph(5)
     for g in testgraphs(g4)
         d = @inferred(random_minimal_dominating_set(g, 2))
-        @test size(d)[1] == 1 #Exactly one vertex 
+        @test length(d)== 1 #Exactly one vertex 
 
         d = @inferred(random_minimal_dominating_set(g, 2, parallel=true))
-        @test size(d)[1] == 1 
+        @test length(d)== 1 
     end
 
     g5 = PathGraph(4)

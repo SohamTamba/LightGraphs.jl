@@ -6,17 +6,21 @@ update `degree_queue` if it is not.
 """
 function update_dominated(
     g::AbstractGraph{T},
-    degree_queue::PriorityQueue,
+    degree_queue::DataStructures.PriorityQueue,
     v::Integer,
-    dominated::Vector{Bool},
-    deleted::Vector{Bool}
+    dominated::BitArray{1},
+    deleted::BitArray{1}
     ) where T <: Integer
 
     @inbounds if !dominated[v]
         dominated[v] = true
-        deleted[v] || (degree_queue[v] -= 1)
+        if !deleted[v] 
+            degree_queue[v] -= 1
+        end
         @inbounds @simd for u in neighbors(g, v)
-            deleted[u] || (degree_queue[u] -= 1)
+            if !deleted[u] 
+                degree_queue[u] -= 1
+            end
         end
     end
 end
@@ -35,14 +39,14 @@ function degree_dominating_set(
     g::AbstractGraph{T}
     ) where T <: Integer 
 
-    nvg::T = nv(g)  
+    nvg = nv(g)  
     dom_set = Vector{T}()  
-    deleted = zeros(Bool, nvg)
-    dominated = zeros(Bool, nvg)
-    degree_queue = PriorityQueue(Base.Order.Reverse, zip(collect(1:nv(g)), broadcast(+, degree(g), 1)))
+    deleted = falses(nvg)
+    dominated = falses(nvg)
+    degree_queue = DataStructures.PriorityQueue(Base.Order.Reverse, zip(collect(1:nv(g)), broadcast(+, degree(g), 1)))
 
-    while !isempty(degree_queue) && peek(degree_queue)[2] > 0
-        v = dequeue_pair!(degree_queue)[1]
+    while !DataStructures.isempty(degree_queue) && DataStructures.peek(degree_queue)[2] > 0
+        v = DataStructures.dequeue!(degree_queue)
         deleted[v] = true
         push!(dom_set, v)
 

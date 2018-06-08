@@ -14,7 +14,7 @@ function random_maximal_independent_set_it(
     ) where T <: Integer 
   
     ind_set = Vector{T}()  
-    deleted = zeros(Bool, nv(g))
+    deleted = falses(nv(g))
     perm_v = Random.shuffle(collect(vertices(g)))
 
     for v in perm_v
@@ -29,7 +29,7 @@ function random_maximal_independent_set_it(
     return ind_set
 end
 
-best_ind_set(is1::Vector{T}, is2::Vector{T}) where T <: Integer = size(is1)[1] > size(is2)[1] ? is1 : is2
+best_ind_set(is1::Vector{T}, is2::Vector{T}) where T <: Integer = length(is1) > length(is2) ? is1 : is2
 
 """
     seq_random_maximal_independent_set(g, reps)
@@ -70,7 +70,7 @@ function parallel_random_maximal_independent_set(
     reps::Integer
     ) where T <: Integer 
 
-    type_instable_ind_set = @distributed (best_ind_set) for i in 1:max(1, reps)
+    type_instable_ind_set = Distributed.@distributed (best_ind_set) for i in 1:max(1, reps)
         random_maximal_independent_set_it(g)
     end
     ind_set = Vector{T}() #Makes the code type stable

@@ -11,9 +11,9 @@ function random_maximal_matching_it(
     g::AbstractGraph{T}
     ) where T <: Integer 
 
-    nvg::T = nv(g)  
+    nvg = nv(g)  
     matching = Vector{Edge{T}}()  
-    seen = zeros(Bool, nvg)
+    seen = falses(nvg)
     edge_list = Random.shuffle(collect(edges(g)))
 
     @inbounds for e in edge_list
@@ -25,7 +25,7 @@ function random_maximal_matching_it(
     return matching
 end
 
-best_matching(m1::Vector{Edge{T}}, m2::Vector{Edge{T}}) where T <: Integer = size(m1)[1] > size(m2)[1] ? m1 : m2
+best_matching(m1::Vector{Edge{T}}, m2::Vector{Edge{T}}) where T <: Integer = length(m1) > length(m2) ? m1 : m2
 
 """
     seq_random_maximal_matching(g, reps)
@@ -63,7 +63,7 @@ function parallel_random_maximal_matching(
     reps::Integer
     ) where T <: Integer 
 
-    type_instable_matching = @distributed (best_matching) for i in 1:max(1, reps)
+    type_instable_matching = Distributed.@distributed (best_matching) for i in 1:max(1, reps)
         random_maximal_matching_it(g)
     end
     matching = Vector{Edge{T}}() #Makes the code type stable

@@ -9,7 +9,7 @@
     g4 = CompleteGraph(5)
     for g in testgraphs(g4)
         c = @inferred(degree_independent_set(g))
-        @test size(c)[1] == 1 #Exactly one vertex 
+        @test length(c)== 1 #Exactly one vertex 
     end
 
     #PathGraph(5) with additional edge 2-5

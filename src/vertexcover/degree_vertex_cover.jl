@@ -13,17 +13,18 @@ function degree_vertex_cover(
 
     nvg::T = nv(g)  
     cover = Vector{T}()  
-    deleted = zeros(Bool, nvg)
-    degree_queue = PriorityQueue(Base.Order.Reverse, zip(collect(1:nv(g)), degree(g)))
+    deleted = falses(nvg)
+    degree_queue = DataStructures.PriorityQueue(Base.Order.Reverse, zip(collect(1:nv(g)), degree(g)))
 
-    while !isempty(degree_queue) && peek(degree_queue)[2] > 0
-        max_degree_entry = dequeue_pair!(degree_queue)
-        v = max_degree_entry[1]
+    while !isempty(degree_queue) && DataStructures.peek(degree_queue)[2] > 0
+        v = DataStructures.dequeue!(degree_queue)
 
-	deleted[v] = true
-	push!(cover, v)
+        deleted[v] = true
+        push!(cover, v)
         @inbounds @simd for u in neighbors(g, v)
-            deleted[u] || (degree_queue[u] -= 1)
+            if !deleted[u] 
+                degree_queue[u] -= 1
+            end
         end
     end
 
