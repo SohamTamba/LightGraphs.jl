@@ -1,13 +1,17 @@
 """
     random_maximal_independent_set_it(g)
 
+Find a set of vertices that are independent (no two vertices are adjacent to each other) and 
+it is not possible to insert a vertex into the set without sacrificing the independence property.
+
 ### Implementation Notes
 Performs [Approximate Maximum Independent Set](https://en.wikipedia.org/wiki/Maximal_independent_set#Sequential_algorithm) once.
 Returns a vector of vertices representing the vertices in the independent set.
+
 ### Performance
-O(|V|+|E|)
-### Approximation Factor
-max(degree(g))+1
+Runtime: O(|V|+|E|)
+Memory: O(|V|)
+Approximation Factor: max(degree(g))+1
 """
 function random_maximal_independent_set_it(
     g::AbstractGraph{T}
@@ -15,9 +19,8 @@ function random_maximal_independent_set_it(
   
     ind_set = Vector{T}()  
     deleted = falses(nv(g))
-    perm_v = Random.shuffle(collect(vertices(g)))
 
-    for v in perm_v
+    for v in Random.shuffle(vertices(g))
         deleted[v] && continue
         deleted[v] = true
         push!(ind_set, v)

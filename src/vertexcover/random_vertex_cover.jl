@@ -1,13 +1,17 @@
 """
     random_vertex_cover_it(g)
 
+Find a set of vertices such that every edge in `g` has some vertex in the set as 
+atleast one of its end point.
+
 ### Implementation Notes
 Performs [Approximate Minimum Vertex Cover](https://en.wikipedia.org/wiki/Vertex_cover#Approximate_evaluation) once.
 Returns a vector of vertices representing the vertices in the Vertex Cover.
+
 ### Performance
-O(|V|+|E|)
-### Approximation Factor
-2
+Runtime: O(|V|+|E|)
+Memory: O(|E|)
+Approximation Factor: 2
 """
 function random_vertex_cover_it(
     g::AbstractGraph{T}
@@ -16,9 +20,8 @@ function random_vertex_cover_it(
     nvg::T = nv(g)  
     cover = Vector{T}()  
     seen = falses(nvg)
-    edge_list = Random.shuffle(collect(edges(g)))
 
-    @inbounds for e in edge_list
+    @inbounds for e in Random.shuffle(collect(edges(g)))
         if !(seen[e.src] || seen[e.dst])
             seen[e.src] = seen[e.dst] = true
             push!(cover, e.src)

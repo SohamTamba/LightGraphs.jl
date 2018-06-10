@@ -1,12 +1,18 @@
 """
     random_minimal_dominating_set_it(g)
 
+Find a set of vertices that are dominating (all vertices in `g` are either adjacent to a vertex 
+in the set or is a vertex in the set) and it is not possible to delete a vertex from the set 
+without sacrificing the dominating property.
+
 ### Implementation Notes
 Initially, every vertex is in the dominating set.
 In some random order, we check if the removal of a vertex from the dominating set will no longer make the
-vertex a dominating set. If no, the vertex is removed from the dominating set,
+vertex a dominating set. If no, the vertex is removed from the dominating set.
+
 ### Performance
-O(|V|+|E|)
+Runtime: O(|V|+|E|)
+Memory: O(|V|)
 """    
 function random_minimal_dominating_set_it(
     g::AbstractGraph{T}
@@ -15,10 +21,9 @@ function random_minimal_dominating_set_it(
     nvg::T = nv(g)  
     is_dom = trues(nvg)  
     dom_degree = degree(g)
-    perm_v = Random.shuffle(collect(vertices(g)))
     dom_size = nvg
 
-    for v in perm_v
+    for v in Random.shuffle(vertices(g))
     	(dom_degree[v] == 0) && continue
     	safe = true
     	for u in neighbors(g, v)
@@ -102,8 +107,9 @@ end
 Initially, every vertex is in the dominating set.
 In some random order, we check if the removal of a vertex from the dominating set will no longer make the
 vertex a dominating set. If no, the vertex is removed from the dominating set,
-It repreats the algorithm `reps` times and returns the set with the least vertices.
+It repeats the algorithm `reps` times and returns the set with the least vertices.
 If arguement `parallel` is set true then the repetitions are done in parallel on different processes.
+
 ### Performance
 O(reps*(|V|+|E|))
 """

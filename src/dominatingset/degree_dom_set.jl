@@ -1,8 +1,9 @@
 """
     update_dominated(degree_queue, v, dominated, deleted)
 
-Helper function used to check if a vertex is already dominated and to
-update `degree_queue` if it is not.
+Check if a vertex is already dominated.
+If not, make it dominated and update `degree_queue` by decreasing
+the priority of the vertices adjacent to `v` by 1.
 """
 function update_dominated(
     g::AbstractGraph{T},
@@ -28,12 +29,17 @@ end
 """
     degree_dominating_set(g)
 
-Greedy Hueristic to solve Minimum Dominating Set.
+Obtain a [dominating set](https://en.wikipedia.org/wiki/Dominating_set) using a greedy heuristic.
+
 ### Implementation Notes
-Initially, all vertices are undominated.
-Itertively chooses the vertex that would dominate the most undominated vertices.
+A vertex is said to be dominated if it is in the dominating set or adjacent to a vertex in the
+dominating set.
+Initialise the dominating set to an empty set and iteratively choose the vertex that would 
+dominate the most undominated verteices.
+
 ### Performance
-O( (|V|+|E|)*log(|V|) )
+Runtime: O( (|V|+|E|)*log(|V|) )
+Memory: O(|V|)
 """
 function degree_dominating_set(
     g::AbstractGraph{T}
@@ -43,7 +49,7 @@ function degree_dominating_set(
     dom_set = Vector{T}()  
     deleted = falses(nvg)
     dominated = falses(nvg)
-    degree_queue = DataStructures.PriorityQueue(Base.Order.Reverse, zip(collect(1:nv(g)), broadcast(+, degree(g), 1)))
+    degree_queue = DataStructures.PriorityQueue(Base.Order.Reverse, enumerate(degree(g) .+ 1))
 
     while !DataStructures.isempty(degree_queue) && DataStructures.peek(degree_queue)[2] > 0
         v = DataStructures.dequeue!(degree_queue)
@@ -52,8 +58,8 @@ function degree_dominating_set(
 
         update_dominated(g, degree_queue, v, dominated, deleted)
         for u in neighbors(g, v)
-    		update_dominated(g, degree_queue, u, dominated, deleted)
-    	end
+            update_dominated(g, degree_queue, u, dominated, deleted)
+        end
     end
     return dom_set
 end

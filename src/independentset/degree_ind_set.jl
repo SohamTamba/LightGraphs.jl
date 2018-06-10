@@ -1,11 +1,18 @@
 """
     degree_independent_set(g)
 
-Greedy Hueristic to solve Maximum Independent Set.
+Obtain an [independent set](https://en.wikipedia.org/wiki/Independent_set_(graph_theory)) of
+`g` using a greedy heuristic.
+
 ### Implementation Notes
-Itertively chooses the vertex with the smallest degree for the independent set.
+A vertex is said to be valid if it is not in the independent set or adjacent to any vertex
+in the independent set.
+Initilalise the independent set to an empty set and iteratively choose the vertex that is adjacent to the fewest valid vertices in the independent set
+until all vertices are invalid.
+
 ### Performance
-O( (|V|+|E|)*log(|V|) )
+Runtime: O((|V|+|E|)*log(|V|))
+Memory: O(|V|)
 """
 function degree_independent_set(
     g::AbstractGraph{T}
@@ -14,7 +21,7 @@ function degree_independent_set(
     nvg::T = nv(g)  
     ind_set = Vector{T}()  
     deleted = falses(nvg)
-    degree_queue = DataStructures.PriorityQueue(zip(collect(1:nv(g)), degree(g)))
+    degree_queue = DataStructures.PriorityQueue(enumerate(degree(g)))
 
     while !DataStructures.isempty(degree_queue)
         v = DataStructures.dequeue!(degree_queue)

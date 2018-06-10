@@ -1,11 +1,17 @@
 """
     random_maximal_matching_it(g)
 
+Find a set of edges that constitute a matching (no two edges have a common end point) and 
+it is not possible to insert an edge into the set without sacrificing the matching property.
+
 ### Implementation Notes
 Performs [Approximate Maximum Matching](https://en.wikipedia.org/wiki/Vertex_matching#Approximate_evaluation) once.
 Returns a vector of edges representing the edges in the Matching.
+
 ### Performance
-O(|V|+|E|)
+Runtime: O(|V|+|E|)
+Memory: O(|E|)
+Approximation Factor: 2
 """
 function random_maximal_matching_it(
     g::AbstractGraph{T}
@@ -14,9 +20,8 @@ function random_maximal_matching_it(
     nvg = nv(g)  
     matching = Vector{Edge{T}}()  
     seen = falses(nvg)
-    edge_list = Random.shuffle(collect(edges(g)))
 
-    @inbounds for e in edge_list
+    @inbounds for e in Random.shuffle(collect(edges(g)))
         if !(seen[e.src] || seen[e.dst])
             seen[e.src] = seen[e.dst] = true
             push!(matching, e)

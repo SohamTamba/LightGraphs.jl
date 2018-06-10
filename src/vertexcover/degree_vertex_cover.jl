@@ -1,11 +1,16 @@
 """
     degree_vertex_cover(g)
 
-Greedy Hueristic to solve Minimum Vertex Cover.
+Obtain a vertex cover using a greedy heuristic.
+
 ### Implementation Notes
-Itertively chooses the vertex with the largest degree into the covering.
+An edge is said to be covered if it has at least one end-point in the vertex cover.
+Initialise the vertex cover to an empty set and iteratively choose the vertex with the most uncovered
+edges.
+
 ### Performance
-O( (|V|+|E|)*log(|V|) )
+Runtime: O((|V|+|E|)*log(|V|))
+Memory: O(|V|)
 """
 function degree_vertex_cover(
     g::AbstractGraph{T}
@@ -14,7 +19,7 @@ function degree_vertex_cover(
     nvg::T = nv(g)  
     cover = Vector{T}()  
     deleted = falses(nvg)
-    degree_queue = DataStructures.PriorityQueue(Base.Order.Reverse, zip(collect(1:nv(g)), degree(g)))
+    degree_queue = DataStructures.PriorityQueue(Base.Order.Reverse, enumerate(degree(g)))
 
     while !isempty(degree_queue) && DataStructures.peek(degree_queue)[2] > 0
         v = DataStructures.dequeue!(degree_queue)
