@@ -198,6 +198,7 @@ a `Graph` or `DiGraph`.
 const Edge = LightGraphs.SimpleGraphs.SimpleEdge
 
 include("degeneracy.jl")
+include("generate_map.jl")
 include("digraph/transitivity.jl")
 include("cycles/johnson.jl")
 include("cycles/hadwick-james.jl")

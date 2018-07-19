@@ -26,6 +26,7 @@ tests = [
     "operators",
     "degeneracy",
     "distance",
+    "generate_map",
     "digraph/transitivity",
     "cycles/hadwick-james",
     "cycles/johnson",
