@@ -144,7 +144,10 @@ kruskal_mst, prim_mst,
 articulation, biconnected_components,
 
 #graphcut
-normalized_cut
+normalized_cut,
+
+#travellingsalesman
+metric_travelling_salesman
 
 """
     LightGraphs
@@ -244,6 +247,7 @@ include("biconnectivity/biconnect.jl")
 include("graphcut/normalized_cut.jl")
 include("Experimental/Experimental.jl")
 include("Parallel/Parallel.jl")
+include("travellingsalesman/metric_travelling_salesman.jl")
 
 using .LinAlg
 end # module

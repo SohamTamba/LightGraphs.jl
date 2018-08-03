@@ -70,7 +70,8 @@ tests = [
     "biconnectivity/articulation",
     "biconnectivity/biconnect",
     "graphcut/normalized_cut",
-    "experimental/experimental"
+    "experimental/experimental",
+    "travellingsalesman/metric_travelling_salesman"
 ]
 
 @testset "LightGraphs" begin
