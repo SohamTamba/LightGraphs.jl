@@ -5,7 +5,7 @@ Partition `sources` using [`LightGraphs.unweighted_contiguous_partition`](@ref) 
 the i^{th} partition  into `queue_list[i]` and set to empty_list[i] to true if the 
 i^{th} partition is empty.
 """
-function partition_sources!(
+function bit_partition_sources!(
     queue_list::Vector{Vector{T}},
     sources::Vector{<:Integer},
     empty_list::Vector{Bool}
@@ -18,9 +18,11 @@ function partition_sources!(
     end
 end
 
+export bit_gdistances!, bit_gdistances
+
 """
-    gdistances!(g, sources, vert_level; queue_segment_size=20)
-    gdistances!(g, source, vert_level; queue_segment_size=20)
+    bit_gdistances!(g, sources, vert_level; queue_segment_size=20)
+    bit_gdistances!(g, source, vert_level; queue_segment_size=20)
 
 Parallel implementation of [`LightGraphs.gdistances!`](@ref) with dynamic load balancing.
 
@@ -33,7 +35,7 @@ improve performance.
 - [Avoiding Locks and Atomic Instructions in Shared-Memory Parallel BFS Using Optimistic 
 Parallelization](https://www.computer.org/csdl/proceedings/ipdpsw/2013/4979/00/4979b628-abs.html).
 """
-function gdistances!(
+function bit_gdistances!(
     g::AbstractGraph{T}, 
     sources::Vector{<:Integer},
     vert_level::Vector{T};
@@ -45,6 +47,7 @@ function gdistances!(
     segment_size = convert(T, queue_segment_size) # Type stability
     fill!(vert_level, typemax(T))
     visited = zeros(Bool, nvg)
+    visited_bit = falses(nvg)
 
     #bitVector not thread safe
     next_level_t = [sizehint!(Vector{T}(), cld(nvg, n_t)) for _ in Base.OneTo(n_t)]
@@ -54,9 +57,10 @@ function gdistances!(
 
     for s in sources    
         visited[s] = true
+        visited_bit[s] = true
         vert_level[s] = zero(T)
     end
-    partition_sources!(cur_level_t, sources, queue_explored_t)
+    bit_partition_sources!(cur_level_t, sources, queue_explored_t)
     is_cur_level_t_empty = isempty(sources)
     n_level = zero(T)
 
@@ -65,6 +69,7 @@ count_q = zeros(Int64, n_t)
 count_V = zeros(Int64, n_t)
 count_E = zeros(Int64, n_t)
 count_b = zeros(Int64, n_t)
+count_bit = zeros(Int64, n_t)
 =#
     while !is_cur_level_t_empty
         n_level += one(T)
@@ -94,15 +99,19 @@ count_b = zeros(Int64, n_t)
                         (visited[v] && vert_level[v] == n_level-one(T)) || continue
 #count_V[thread_id]+=one(Int64)
                         for i in outneighbors(g, v)
-                            # Data race, but first read on visited[i] always succeeds
 #count_E[thread_id]+=one(Int64)
+                        if !visited_bit[i]
+                            visited_bit[i] = true
+#count_bit[thread_id]+=one(Int64)
+                            # Data race, but first read on visited[i] always succeeds
                             if !visited[i]
+                                visited[i] = true
+#count_b[thread_id]+=one(Int64)
                                 vert_level[i] = n_level
                                 #Concurrent visited[i] = true always succeeds
-#count_b[thread_id]+=one(Int64)
-                                visited[i] = true
                                 push!(next_level, i)
                             end
+                        end
                         end
                     end   
                 end
@@ -127,6 +136,8 @@ println("count_V = $(count_V)")
 println(sum(count_V))
 println("count_E = $(count_E)")
 println(sum(count_E))
+println("count_bit = $(count_bit)")
+println(sum(count_bit))
 println("count_b = $(count_b)")
 println(sum(count_b))
 println("n_level = $(n_level)")
@@ -134,12 +145,12 @@ println("n_level = $(n_level)")
     return vert_level
 end
 
-gdistances!(g::AbstractGraph{T}, source::Integer, vert_level::Vector{T}; queue_segment_size::Integer=20) where T<:Integer = 
-gdistances!(g, [source,], vert_level; queue_segment_size=20)
+bit_gdistances!(g::AbstractGraph{T}, source::Integer, vert_level::Vector{T}; queue_segment_size::Integer=20) where T<:Integer = 
+bit_gdistances!(g, [source,], vert_level; queue_segment_size=20)
 
 """
-    gdistances(g, sources; queue_segment_size=20)
-    gdistances(g, source; queue_segment_size=20)
+    bit_gdistances(g, sources; queue_segment_size=20)
+    bit_gdistances(g, source; queue_segment_size=20)
 
 Parallel implementation of [`LightGraphs.gdistances!`](@ref) with dynamic load balancing.
 
@@ -151,8 +162,9 @@ For denser graphs, a smaller value of `queue_segment_size` could improve perform
 - [Avoiding Locks and Atomic Instructions in Shared-Memory Parallel BFS Using Optimistic 
 Parallelization](https://www.computer.org/csdl/proceedings/ipdpsw/2013/4979/00/4979b628-abs.html).
 """
-gdistances(g::AbstractGraph{T}, sources::Vector{<:Integer}; queue_segment_size::Integer=20) where T<:Integer = 
-gdistances!(g, sources, Vector{T}(undef, nv(g)); queue_segment_size=20)
+bit_gdistances(g::AbstractGraph{T}, sources::Vector{<:Integer}; queue_segment_size::Integer=20) where T<:Integer = 
+bit_gdistances!(g, sources, Vector{T}(undef, nv(g)); queue_segment_size=20)
 
-gdistances(g::AbstractGraph{T}, source::Integer; queue_segment_size::Integer=20) where T<:Integer = 
-gdistances!(g, [source,], Vector{T}(undef, nv(g)); queue_segment_size=20)
+bit_gdistances(g::AbstractGraph{T}, source::Integer; queue_segment_size::Integer=20) where T<:Integer = 
+bit_gdistances!(g, [source,], Vector{T}(undef, nv(g)); queue_segment_size=20)
+

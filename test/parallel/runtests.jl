@@ -16,6 +16,7 @@ tests = [
     "shortestpaths/johnson",
     "traversals/bfs",
     "traversals/gdistances",
+    "traversals/bit_gdistances",
     "traversals/greedy_color",
     "vertexcover/random_vertex_cover",
     "utils"

@@ -153,13 +153,13 @@ end
         if !issorted(fadjlist[v])
             sort!(fadjlist[v])
         end
-        unique!(fadjlist[v])
+        #unique!(fadjlist[v])
         neg += length(fadjlist[v])
         # self-loops should count as one edge
         for w in fadjlist[v]
             if w == v
                 neg += 1
-                break
+                #break
             end
         end
     end
