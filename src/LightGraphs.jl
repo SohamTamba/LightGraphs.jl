@@ -7,7 +7,7 @@ using ArnoldiMethod
 using Statistics: mean
 
 using Inflate: InflateGzipStream
-using DataStructures: IntDisjointSets, PriorityQueue, dequeue!, dequeue_pair!, enqueue!, heappop!, heappush!, in_same_set, peek, union!
+using DataStructures: IntDisjointSets, PriorityQueue, dequeue!, dequeue_pair!, enqueue!, heappop!, heappush!, in_same_set, peek, union!, BinaryMinHeap, pop!, push!
 using Distributed: @distributed
 using LinearAlgebra: I, Symmetric, diagm, eigen, eigvals, norm, rmul!, tril, triu
 import LinearAlgebra: Diagonal, issymmetric, mul!
@@ -155,6 +155,7 @@ independent_set,
 #vertexcover
 vertex_cover
 
+
 """
     LightGraphs
 
@@ -205,6 +206,7 @@ a `Graph` or `DiGraph`.
 """
 const Edge = LightGraphs.SimpleGraphs.SimpleEdge
 
+include("DataStructures/priorityqueue.jl")
 include("degeneracy.jl")
 include("digraph/transitivity.jl")
 include("cycles/johnson.jl")
